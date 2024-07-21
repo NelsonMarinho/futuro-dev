@@ -8,7 +8,17 @@
     <link href="styles.css" rel="stylesheet">
     <style>
         body {
-            background-color: #f8f9fa;
+            background-image: url("embarques.webp");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #ffffff;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 50px;
         }
         .btn-custom {
             background-color: #007bff;
@@ -58,7 +68,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 1000;
-            width: 50%;
+            width: 90%;
             text-align: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
@@ -87,6 +97,46 @@
             }
             .table-responsive {
                 margin-bottom: 1rem;
+            }
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                margin-top: 20px;
+            }
+            .btn-custom {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+            .nav-link-custom {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+            .card-custom {
+                padding: 15px;
+            }
+            .centered-message {
+                width: 80%;
+            }
+        }
+        @media (max-width: 992px) {
+            .container {
+                padding: 18px;
+                margin-top: 30px;
+            }
+            .btn-custom {
+                padding: 9px 18px;
+                font-size: 15px;
+            }
+            .nav-link-custom {
+                padding: 9px 18px;
+                font-size: 15px;
+            }
+            .card-custom {
+                padding: 18px;
+            }
+            .centered-message {
+                width: 85%;
             }
         }
     </style>
