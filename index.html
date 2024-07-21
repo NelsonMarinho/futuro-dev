@@ -63,7 +63,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         .modal-dialog {
-            max-width: 100%;
+            max-width: 90%;
             margin: 0;
         }
         .modal-content {
@@ -73,7 +73,10 @@
             padding: 15px;
         }
         .table-responsive {
+            max-height: 300px; /* Altura máxima da tabela rolável */
+            max-width: 100%; /* Largura máxima da tabela rolável */
             overflow-x: auto;
+            overflow-y: auto;
         }
         @media (max-width: 576px) {
             .modal-dialog {
@@ -85,9 +88,6 @@
             .table-responsive {
                 margin-bottom: 1rem;
             }
-        }
-        #carregamentoList {
-            display: none;
         }
     </style>
 </head>
@@ -148,11 +148,23 @@
             </div>
             <div class="row justify-content-center mt-4">
                 <div class="col-md-10 text-center">
-                    <button class="btn btn-primary" onclick="toggleCarregamentoList()">Ver Carregamentos</button>
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#carregamentoModal">Ver Carregamentos</button>
                 </div>
             </div>
-            <div class="row justify-content-center mt-4" id="carregamentoList">
-                <div class="col-md-12">
+        </div>
+    </div>
+
+    <!-- Modal para lista de carregamentos -->
+    <div class="modal fade" id="carregamentoModal" tabindex="-1" role="dialog" aria-labelledby="carregamentoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="carregamentoModalLabel">Lista de Carregamentos</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
@@ -227,6 +239,7 @@
                     setTimeout(() => {
                         message.style.display = 'none';
                     }, 3000);
+                    $('#carregamentoModal').modal('hide'); // Fechar modal após editar
                     loadCarregamentos();
                 } else {
                     alert('Erro ao registrar o carregamento.');
@@ -303,6 +316,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        $('#carregamentoModal').modal('hide'); // Fechar modal após excluir
                         loadCarregamentos();
                     } else {
                         alert('Erro ao excluir o carregamento.');
@@ -312,16 +326,6 @@
                     console.error('Erro:', error);
                     alert('Erro ao excluir o carregamento.');
                 });
-            }
-        }
-
-        function toggleCarregamentoList() {
-            const carregamentoList = document.getElementById('carregamentoList');
-            if (carregamentoList.style.display === 'none' || carregamentoList.style.display === '') {
-                carregamentoList.style.display = 'block';
-                loadCarregamentos();
-            } else {
-                carregamentoList.style.display = 'none';
             }
         }
 

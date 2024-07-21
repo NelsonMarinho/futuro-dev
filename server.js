@@ -78,12 +78,12 @@ app.get('/carregamentos', (req, res) => {
     });
 });
 
-// Rota para obter detalhes de um carregamento
+// Rota para editar carregamento
 app.get('/carregamentos/:id', (req, res) => {
     const { id } = req.params;
     db.get('SELECT * FROM carregamentos WHERE id = ?', [id], (err, row) => {
         if (err) {
-            return res.status(500).json({ success: false, message: 'Erro ao recuperar o carregamento' });
+            return res.status(500).json({ success: false, message: 'Erro ao recuperar carregamento' });
         }
         if (!row) {
             return res.status(404).json({ success: false, message: 'Carregamento não encontrado' });
@@ -92,7 +92,6 @@ app.get('/carregamentos/:id', (req, res) => {
     });
 });
 
-// Rota para editar carregamento
 app.put('/carregamentos/:id', (req, res) => {
     const { id } = req.params;
     const { data, composicao, vagoes, destino, filial, volume } = req.body;
@@ -123,4 +122,3 @@ app.delete('/carregamentos/:id', (req, res) => {
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
 });
-
