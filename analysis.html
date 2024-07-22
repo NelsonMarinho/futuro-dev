@@ -6,7 +6,7 @@
     <title>Análise dos Dados</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <link href="styles.css" rel="stylesheet">
     <style>
         body {
@@ -99,10 +99,41 @@
             margin-bottom: 20px;
         }
 
+        .selection-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .selection-container label {
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        .selection-container select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            margin-right: 20px;
+        }
+
         @media (max-width: 767px) {
             .chart-container {
                 height: 300px;
                 padding: 10px;
+            }
+
+            .selection-container {
+                flex-direction: column;
+            }
+
+            .selection-container select {
+                margin-right: 0;
+                margin-bottom: 10px;
             }
         }
 
@@ -127,6 +158,20 @@
         <a href="index.html" class="btn btn-custom my-4">Inserir Dados Carregamento</a>
         <h1 class="text-center my-4">Análise das Expedições Ferroviárias</h1>
         
+        <div class="selection-container">
+            <label for="materialSelect">Selecione o Material:</label>
+            <select id="materialSelect">
+                <option value="todos">Todos</option>
+                <option value="Soja">Soja</option>
+                <option value="Milho">Milho</option>
+            </select>
+            <label for="yearSelect">Selecione o Ano:</label>
+            <select id="yearSelect">
+                <option value="todos">Todos</option>
+                <!-- Opções de anos serão adicionadas dinamicamente -->
+            </select>
+        </div>
+
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">

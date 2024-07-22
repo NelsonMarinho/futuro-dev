@@ -145,9 +145,9 @@
     <div class="container mt-5">
         <div class="text-center mb-4">
             <a class="nav-link nav-link-custom" href="#" onclick="openPage('Registro', this)" id="defaultOpen">Registro</a>
-            <a class="nav-link nav-link-custom" href="analysis.html">Dashboard</a>
+            <a class="nav-link nav-link-custom" href="analysis.html">Painel Análises</a>
         </div>
-        <h1 class="text-center mb-4">Controle de Embarques Ferroviário</h1>
+        <h1 class="text-center mb-4">Gestão de Embarques Ferroviário</h1>
         <div id="Registro" class="tabcontent my-4">
             <div class="row justify-content-center">
                 <div class="col-md-6">
@@ -155,7 +155,7 @@
                         <form id="carregamentoForm">
                             <input type="hidden" id="carregamentoId">
                             <div class="form-group">
-                                <label for="data">Data de Carregamento:</label>
+                                <label for="data">Data do Carregamento:</label>
                                 <input type="date" class="form-control" id="data" required>
                             </div>
                             <div class="form-group">
@@ -187,12 +187,19 @@
                                 </select>
                             </div>
                             <div class="form-group">
+                                <label for="material">Material Carregado:</label>
+                                <select class="form-control" id="material" required>
+                                    <option value="Soja">Soja</option>
+                                    <option value="Milho">Milho</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
                                 <label for="volume">Volume Carregado (toneladas):</label>
                                 <input type="text" class="form-control" id="volume" required autocomplete="off">
                             </div>
-                            <button type="submit" class="nav-link-custom btn-block" id="submitButton">Registrar Carregamento</button>
+                            <button type="submit" class="nav-link-custom btn-block" id="submitButton">Registrar Expedição</button>
                         </form>
-                        <div id="message" class="alert alert-success centered-message" style="display: none;">Carregamento registrado com sucesso!</div>
+                        <div id="message" class="alert alert-success centered-message" style="display: none;">Expedição registrada com sucesso!</div>
                     </div>
                 </div>
             </div>
@@ -224,6 +231,7 @@
                                     <th>Vagões</th>
                                     <th>Destino</th>
                                     <th>Filial</th>
+                                    <th>Material</th>
                                     <th>Volume</th>
                                     <th>Ações</th>
                                 </tr>
@@ -233,6 +241,27 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">Confirmação</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="confirmMessage">
+                    <!-- Mensagem de confirmação será inserida aqui via JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="confirmButton">Confirmar</button>
                 </div>
             </div>
         </div>
@@ -251,9 +280,10 @@
             const vagoes = document.getElementById('vagoes').value;
             const destino = document.getElementById('destino').value;
             const filial = document.getElementById('filial').value;
+            const material = document.getElementById('material').value;
             const volume = document.getElementById('volume').value.replace(/\D/g, '');
 
-            if (!data || !composicao || !vagoes || !destino || !filial || !volume) {
+            if (!data || !composicao || !vagoes || !destino || !filial || !material || !volume) {
                 alert('Todos os campos são obrigatórios!');
                 return;
             }
@@ -264,6 +294,7 @@
                 vagoes: parseInt(vagoes),
                 destino: destino,
                 filial: filial,
+                material: material,
                 volume: parseFloat(volume)
             };
 
@@ -281,23 +312,22 @@
             .then(data => {
                 if (data.success) {
                     document.getElementById('carregamentoForm').reset();
-                    document.getElementById('submitButton').textContent = 'Registrar Carregamento';
+                    document.getElementById('submitButton').textContent = 'Registrar Expedição';
                     document.getElementById('carregamentoId').value = '';
                     const message = document.getElementById('message');
-                    message.textContent = 'Carregamento registrado com sucesso!';
+                    message.textContent = 'Expedição registrada com sucesso!';
                     message.style.display = 'block';
                     setTimeout(() => {
                         message.style.display = 'none';
                     }, 3000);
-                    $('#carregamentoModal').modal('hide'); // Fechar modal após editar
                     loadCarregamentos();
                 } else {
-                    alert('Erro ao registrar o carregamento.');
+                    alert('Erro ao registrar a expedição.');
                 }
             })
             .catch(error => {
                 console.error('Erro:', error);
-                alert('Erro ao registrar o carregamento.');
+                alert('Erro ao registrar a expedição.');
             });
         });
 
@@ -316,9 +346,10 @@
                             <td>${carregamento.vagoes}</td>
                             <td>${carregamento.destino}</td>
                             <td>${carregamento.filial}</td>
+                            <td>${carregamento.material}</td>
                             <td>${carregamento.volume}</td>
                             <td>
-                                <button class="btn btn-warning btn-sm" onclick="editCarregamento(${carregamento.id})">Editar</button>
+                                <button class="btn btn-warning btn-sm" onclick="confirmEditCarregamento(${carregamento.id}, '${carregamento.composicao}')">Editar</button>
                                 <button class="btn btn-danger btn-sm" onclick="deleteCarregamento(${carregamento.id})">Excluir</button>
                             </td>
                         `;
@@ -334,6 +365,17 @@
             });
         }
 
+        function confirmEditCarregamento(id, composicao) {
+            const confirmMessage = document.getElementById('confirmMessage');
+            confirmMessage.textContent = `Você deseja mesmo editar a composição "${composicao}"?`;
+            const confirmButton = document.getElementById('confirmButton');
+            confirmButton.onclick = function() {
+                editCarregamento(id);
+                $('#confirmModal').modal('hide');
+            };
+            $('#confirmModal').modal('show');
+        }
+
         function editCarregamento(id) {
             fetch(`/carregamentos/${id}`)
             .then(response => response.json())
@@ -346,35 +388,35 @@
                     document.getElementById('vagoes').value = carregamento.vagoes;
                     document.getElementById('destino').value = carregamento.destino;
                     document.getElementById('filial').value = carregamento.filial;
+                    document.getElementById('material').value = carregamento.material;
                     document.getElementById('volume').value = carregamento.volume;
-                    document.getElementById('submitButton').textContent = 'Atualizar Carregamento';
+                    document.getElementById('submitButton').textContent = 'Atualizar Expedição';
                 } else {
-                    alert('Erro ao carregar os detalhes do carregamento.');
+                    alert('Erro ao carregar os detalhes da expedição.');
                 }
             })
             .catch(error => {
                 console.error('Erro ao carregar dados:', error);
-                alert('Erro ao carregar os detalhes do carregamento.');
+                alert('Erro ao carregar os detalhes da expedição.');
             });
         }
 
         function deleteCarregamento(id) {
-            if (confirm('Tem certeza que deseja excluir este carregamento?')) {
+            if (confirm('Tem certeza que deseja excluir esta expedição?')) {
                 fetch(`/carregamentos/${id}`, {
                     method: 'DELETE'
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        $('#carregamentoModal').modal('hide'); // Fechar modal após excluir
                         loadCarregamentos();
                     } else {
-                        alert('Erro ao excluir o carregamento.');
+                        alert('Erro ao excluir a expedição.');
                     }
                 })
                 .catch(error => {
                     console.error('Erro:', error);
-                    alert('Erro ao excluir o carregamento.');
+                    alert('Erro ao excluir a expedição.');
                 });
             }
         }
@@ -411,5 +453,8 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <footer class="text-center mt-4">
+        <p>Versão do sistema: 4.2.2.5</p>
+    </footer>
 </body>
 </html>

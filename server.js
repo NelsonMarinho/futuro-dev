@@ -55,13 +55,14 @@ app.get('/list-users', (req, res) => {
 
 // Rota para registrar carregamentos
 app.post('/carregamentos', (req, res) => {
-    const { data, composicao, vagoes, destino, filial, volume } = req.body;
-    if (!data || !composicao || !vagoes || !destino || !filial || !volume) {
+    const { data, composicao, vagoes, destino, filial, material, volume } = req.body;
+    if (!data || !composicao || !vagoes || !destino || !filial || !material || !volume) {
         return res.status(400).json({ success: false, message: 'Todos os campos são obrigatórios' });
     }
-    const sql = 'INSERT INTO carregamentos (data, composicao, vagoes, destino, filial, volume) VALUES (?, ?, ?, ?, ?, ?)';
-    db.run(sql, [data, composicao, vagoes, destino, filial, volume], function(err) {
+    const sql = 'INSERT INTO carregamentos (data, composicao, vagoes, destino, filial, material, volume) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    db.run(sql, [data, composicao, vagoes, destino, filial, material, volume], function(err) {
         if (err) {
+            console.error('Erro ao registrar o carregamento:', err.message); // Adiciona um log detalhado do erro
             return res.status(500).json({ success: false, message: 'Erro ao registrar o carregamento' });
         }
         res.status(201).json({ success: true, message: 'Carregamento registrado com sucesso', id: this.lastID });
@@ -94,13 +95,14 @@ app.get('/carregamentos/:id', (req, res) => {
 
 app.put('/carregamentos/:id', (req, res) => {
     const { id } = req.params;
-    const { data, composicao, vagoes, destino, filial, volume } = req.body;
-    if (!data || !composicao || !vagoes || !destino || !filial || !volume) {
+    const { data, composicao, vagoes, destino, filial, material, volume } = req.body;
+    if (!data || !composicao || !vagoes || !destino || !filial || !material || !volume) {
         return res.status(400).json({ success: false, message: 'Todos os campos são obrigatórios' });
     }
-    const sql = 'UPDATE carregamentos SET data = ?, composicao = ?, vagoes = ?, destino = ?, filial = ?, volume = ? WHERE id = ?';
-    db.run(sql, [data, composicao, vagoes, destino, filial, volume, id], function(err) {
+    const sql = 'UPDATE carregamentos SET data = ?, composicao = ?, vagoes = ?, destino = ?, filial = ?, material = ?, volume = ? WHERE id = ?';
+    db.run(sql, [data, composicao, vagoes, destino, filial, material, volume, id], function(err) {
         if (err) {
+            console.error('Erro ao atualizar o carregamento:', err.message); // Adiciona um log detalhado do erro
             return res.status(500).json({ success: false, message: 'Erro ao atualizar o carregamento' });
         }
         res.json({ success: true, message: 'Carregamento atualizado com sucesso' });
@@ -113,6 +115,7 @@ app.delete('/carregamentos/:id', (req, res) => {
     const sql = 'DELETE FROM carregamentos WHERE id = ?';
     db.run(sql, [id], function(err) {
         if (err) {
+            console.error('Erro ao excluir o carregamento:', err.message); // Adiciona um log detalhado do erro
             return res.status(500).json({ success: false, message: 'Erro ao excluir o carregamento' });
         }
         res.json({ success: true, message: 'Carregamento excluído com sucesso' });
